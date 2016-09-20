@@ -1,0 +1,13 @@
+3.2.1 Test de votre programme
+
+1.  "bind socker_serveur : Address already in use"
+
+2.  il ne se passe rien. avec nc localhost 8080, on se connecte
+    hochartg@hevea13:~$ nc -z 127.0.0.1 8080
+	hochartg@hevea13:~$
+
+3.  hochartg@hevea13:~$ telnet ::1 8080
+	Trying ::1...
+	telnet: Unable to connect to remote host: Connection refused
+
+4.  le second client ne peut pas se connecter parcequ'il y a au maximum un client connecté au serveur en même temps, pour le moment.
