@@ -13,14 +13,32 @@ int main ( /*int argc , char ** argv*/ ){
   char b[BSIZE];
   while(1){
     int a=accept(s,NULL,NULL);
-    initialiser_signaux();
+
     write(a,"Bienvenue sur notre serveur\n",28);
+    
+    pid_t pid;
+
+    pid = fork();
+    if((pid == -1)){
+      close(a);
+    }
+    else if(pid>0){
+      close(a);
+    }
+    else if(pid==0){
+      
+    
+    initialiser_signaux();
+
   
     while ((n=read(a,b,BSIZE))>0){
       
       write(1,b,n);
       write(a,b,n);
       sleep(1);
+    }
+    close(a);
+    exit(0);
     }
   }
   return 0;
