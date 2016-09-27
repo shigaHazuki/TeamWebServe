@@ -5,12 +5,14 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <sys/wait.h>
 #define BSIZE 1024
 
 int main ( /*int argc , char ** argv*/ ){
   int s=creer_serveur(8080);
   int n=0;
   char b[BSIZE];
+  initialiser_signaux();
   while(1){
     int a=accept(s,NULL,NULL);
 
@@ -26,11 +28,7 @@ int main ( /*int argc , char ** argv*/ ){
       close(a);
     }
     else if(pid==0){
-      
     
-    initialiser_signaux();
-
-  
     while ((n=read(a,b,BSIZE))>0){
       
       write(1,b,n);
@@ -43,8 +41,19 @@ int main ( /*int argc , char ** argv*/ ){
   }
   return 0;
 }
+void traitement_signal ( int sig ){
+  printf ( " Signal %d reçu\n " , sig );
+  while (waitpid(-1,NULL,WNOHANG) >0){}
+}
 void initialiser_signaux ( void ){
-  if (signal(SIGPIPE, SIG_IGN) ==SIG_ERR){
-    perror("signal");
+
+  struct sigaction sa ;
+  
+  sa.sa_handler = traitement_signal ;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = SA_RESTART ;
+  
+  if ( sigaction ( SIGCHLD , & sa , NULL ) == -1){
+    perror ( " sigaction ( SIGCHLD ) " );
   }
 }
