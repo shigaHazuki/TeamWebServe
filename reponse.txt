@@ -11,3 +11,59 @@
 	telnet: Unable to connect to remote host: Connection refused
 
 4.  le second client ne peut pas se connecter parcequ'il y a au maximum un client connecté au serveur en même temps, pour le moment.
+
+5.2.1 Manipulations préliminaires
+
+1.  Modifiez votre programme pour qu’il ne transmette plus rien au client et qu’il affiche sur sa sortie standard les
+	données envoyées par le client ;
+
+	fprintf(stdout, "<TeamWebServ>%s", b)
+
+2.  Lancez la commande $ curl http://localhost:8080/
+
+    Fait
+
+3.  Quel est le message envoyé par le client web ?
+
+    Message d'erreur
+
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+	<HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>ERREUR&nbsp;: L'URL demand&eacute;e n'a pu &ecirc;tre charg&eacute;e</TITLE>
+	<STYLE type="text/css"><!--BODY{background-color:#ffffff;font-family:verdana,sans-serif}PRE{font-family:sans-serif}--></STYLE>
+	</HEAD><BODY>
+	<H1>ERREUR</H1>
+	<H2>L'URL demand&eacute;e n'a pu &ecirc;tre charg&eacute;e</H2>
+	<HR noshade size="1px">
+	<P>
+	En essayant de charger l'URL&nbsp;:
+	<A HREF="http://localhost:8080/">http://localhost:8080/</A>
+	<P>
+	L'erreur suivante a &eacute;t&eacute; rencontr&eacute;e&nbsp;:
+	<UL>
+	<LI>
+	<STRONG>
+	La connexion a &eacute;chou&eacute;
+	</STRONG>
+	</UL>
+
+	<P>
+	Le syst&egrave;me a retourn&eacute;&nbsp;:
+	<PRE><I>    (111) Connection refused</I></PRE>
+
+	<P>
+	La machine distante ou le r&eacute;seau sont peut-&ecirc;tre hors service. Veuillez
+	r&eacute;it&eacute;rer votre requ&ecirc;te.
+	</P>
+
+	<BR clear="all">
+	<HR noshade size="1px">
+	<ADDRESS>
+	Generated Tue, 04 Oct 2016 13:55:29 GMT by cacheserv.univ-lille1.fr (squid/2.7.STABLE5-20081030)
+	</ADDRESS>
+	</BODY></HTML>
+
+4.  À l’aide de la RFC, trouvez le nom donné aux trois constituant de la première ligne de la requête envoyée par le
+	client.
+
+	Aucune idée, a répondre

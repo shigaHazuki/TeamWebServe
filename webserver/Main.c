@@ -31,7 +31,7 @@ int main ( /*int argc , char ** argv*/ ){
 
     fgets(b,BSIZE,f);
 
-    while ((fprintf(f, "<TeamWebServ>%s", b))){
+    while ((fprintf(stdout, "<TeamWebServ>%s", b))){
   
 	  fgets(b,BSIZE,f);
       sleep(1);
