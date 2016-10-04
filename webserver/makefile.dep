@@ -1,2 +1,2 @@
 socket.o: socket.c socket.h
-Main.o: Main.c socket.h
+Main.o: Main.c socket.h Main.h
