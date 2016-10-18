@@ -26,21 +26,28 @@ int main ( /*int argc , char ** argv*/ ){
       close(a);
     }
     else if(pid==0){
-
-      if(verifGet(fgets(b,BSIZE,f))==1){
+      char * s = fgets(b,BSIZE,f);
+      int bool=verifGet(s);
+      while (strncmp(s,"\r\n",2)!=0){
+	fprintf(stdout, "<TeamWebServ>%s", b);
+	s=fgets(b,BSIZE,f);
+      }
+      
+      if(bool==1){
        	fprintf(stdout, "<TeamWebServ> La requete est bonne (%s)\n", b);
-	char * s = fgets(b,BSIZE,f);
-	while (strncmp(s,"\r\n",2)!=0){
-          fprintf(stdout, "<TeamWebServ>%s", b);
-	  s=fgets(b,BSIZE,f);
-	}
-	fprintf(stderr,"erreur\n");
+
+
 	fprintf(f,"%s","HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length:15 \r\n\r\n200 Bienvenue\r\n");
 	fflush(f);
 	
 	close(a);
 	exit(0);
-      }else{
+      }else if(bool==-2){
+       	fprintf(f,"%s","HTTP/1.1 404 not found\r\nConnection: close\r\nContent-Length:15 \r\n\r\n404 not found\r\n");
+	fflush(f);
+	fprintf(stderr,"fergdfggsbgd");
+	
+      }else if(bool==-1){
    
 	fprintf(f,"%s","HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length:17 \r\n\r\n400 Bad request\r\n");
 	fflush(f);
@@ -95,6 +102,11 @@ int verifGet (char * chaine){
     if(i==0){
       if(strcmp(token,"GET")!=0){
 	return -1;
+      }
+    }
+    if(i==1){
+      if(strcmp(token,"/")!=0){
+	return -2;
       }
     }
     if(i==2){
