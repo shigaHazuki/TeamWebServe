@@ -14,10 +14,8 @@ int main ( /*int argc , char ** argv*/ ){
   initialiser_signaux();
   while(1){
     int a=accept(s,NULL,NULL);
-	FILE* f = fdopen(a, "w+");
-	
-    fprintf(f,"%s","Bienvenue sur notre serveur\n");
-    
+    FILE* f = fdopen(a, "w+");
+  
     pid_t pid;
     pid = fork();
 
@@ -29,15 +27,26 @@ int main ( /*int argc , char ** argv*/ ){
     }
     else if(pid==0){
 
-    fgets(b,BSIZE,f);
-
-    while ((fprintf(stdout, "<TeamWebServ>%s", b))){
-  
-	  fgets(b,BSIZE,f);
-      sleep(1);
-    }
-    close(a);
-    exit(0);
+      if(verifGet(fgets(b,BSIZE,f))==1){
+       	fprintf(stdout, "<TeamWebServ> La requete est bonne (%s)\n", b);
+	char * s = fgets(b,BSIZE,f);
+	while (strncmp(s,"\r\n",2)!=0){
+          fprintf(stdout, "<TeamWebServ>%s", b);
+	  s=fgets(b,BSIZE,f);
+	}
+	fprintf(stderr,"erreur\n");
+	fprintf(f,"%s","HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length:15 \r\n\r\n200 Bienvenue\r\n");
+	fflush(f);
+	
+	close(a);
+	exit(0);
+      }else{
+   
+	fprintf(f,"%s","HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length:17 \r\n\r\n400 Bad request\r\n");
+	fflush(f);
+	close(a);
+	exit(0);
+      }
     }
   }
   return 0;
@@ -60,3 +69,44 @@ void initialiser_signaux ( void ){
     perror ( " sigaction ( SIGCHLD ) " );
   }
 }
+/*int verifGet (char * chaine){ 
+   int i=0; 
+   if(chaine[0]!='G'||chaine[1]!='E'||chaine[2]!='T'){ 
+     return -1; 
+   } 
+   int compteur=0; 
+   while(chaine[i]!='\n'){ 
+     if(chaine[i]=='/'){ 
+       compteur++; 
+     } 
+     i++; 
+   } 
+   if(compteur!=2){ 
+     return -1; 
+   } 
+   return 1; 
+ }*/
+
+int verifGet (char * chaine){
+  char *token;
+  token=strtok(chaine," ");
+  int i=0;
+  while(token!=NULL){
+    if(i==0){
+      if(strcmp(token,"GET")!=0){
+	return -1;
+      }
+    }
+    if(i==2){
+      if((strncmp(token,"HTTP/1.1",8)!=0) && (strncmp(token,"HTTP/1.0",8)!=0)){
+	return -1;
+      }
+    }
+    i++;
+    token = strtok(NULL," ");
+  }
+  if(i!=3){
+    return -1;
+  }
+  return 1;
+  }
