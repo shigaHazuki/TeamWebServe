@@ -7,6 +7,8 @@
 
 #include <sys/types.h>
 
+
+//création du serveur qui écoute sur le port indiqué en parametre
 int creer_serveur(int port){
 	int socket_serveur;
 	
