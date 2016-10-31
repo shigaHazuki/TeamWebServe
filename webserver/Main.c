@@ -6,11 +6,23 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #define BSIZE 1024
+#include <dirent.h>
+#ifndef WIN32
+    #include <sys/types.h>
+#endif
 
 //Exécution du programme
-int main ( /*int argc , char ** argv*/ ){
+int main (int argc , char ** argv){
+
+  //vérifions d'abord si l'utilisateur donne un chemin d'accés valide
+  if(verifRepertoireValide(argv[1])==-1||argc!=2){
+    exit(EXIT_FAILURE);
+  }
   int s=creer_serveur(8080);
   char b[BSIZE];
   initialiser_signaux();
@@ -53,6 +65,19 @@ int main ( /*int argc , char ** argv*/ ){
 	 else{
 	 send_response ( client , 404 , " Not Found " , " Not Found \ r \ n " );
 	 }*/
+
+      int fd=check_and_open ( "/Test.txt",argv[1]);
+      int dest=check_and_open ("/webserver",argv[1]);
+      if(fd==-1){
+	send_status(f,404,status);
+	close(a);
+	exit(0);
+      }else{
+       	send_status(f,200,status);
+	copy(fd,dest);
+	close(a);
+	exit(0);
+      }
       
       if(bool==1){
 	send_status(f,200,status);
@@ -76,6 +101,7 @@ int main ( /*int argc , char ** argv*/ ){
 /*void send_response ( FILE * client , int code , const char * reason_phrase ,
   const char * message_body ){
   }*/
+
 //detecte le status de la requete 
 void send_status ( FILE * client , int code , const char * reason_phrase ){
   if(code==200){
@@ -179,6 +205,90 @@ int parse_http_request (char * chaine/*, http_request * request*/){
     token = strtok(NULL," ");
   }
   if(i!=3){
+    return -1;
+  }
+  return 1;
+}
+//capture d'une chaine jusqu'au ?
+char *rewrite_target (char *chaine){
+   char *new_chaine = NULL;
+   int fin;
+   int size=strlen(chaine);
+   int deb=0;
+   int i;
+   for(i=0;i<size;i++){
+    if(chaine[i]=='?'){
+      fin=i-1;
+    }
+   }
+   if (chaine != NULL && deb < fin){
+
+      new_chaine = malloc (sizeof (*new_chaine) * (fin - deb + 2));
+      if (new_chaine != NULL){
+
+         int i;
+         for (i = deb; i <= fin; i++){
+            new_chaine[i-deb] = chaine[i];
+         }
+         new_chaine[i-deb] = '\0';
+      }
+      else
+      {
+         fprintf (stderr, "Memoire insuffisante\n");
+         exit (EXIT_FAILURE);
+      }
+   }
+   return new_chaine;
+}
+//verifie si le répertoire est valide ou non (OUi=1, NOn=-1)
+int verifRepertoireValide(char* chaine){
+  DIR *rep=NULL;
+   rep=opendir(chaine);
+  if(rep!=NULL){
+      // S'il y a eu un souci avec la fermeture
+    if (closedir(rep) == -1){
+      exit(EXIT_FAILURE);
+    }
+    return 1;
+  }else{
+    perror("");
+    return -1;
+  }
+}
+//ouverture du fichier retourne -1 s'il y a une erreur, retourne le descripteur de fichier dans le cas contraire
+int check_and_open ( char * target , char * document_root ){
+  char* dir=strcat(document_root,target);
+
+  int fichier  = open(dir,O_RDWR);
+  if (fichier != -1){
+    return fichier;
+  }else{
+    perror("");
+    
+    return -1;
+  }
+}
+//retourne la taille du fichier en octet
+int get_file_size(int fd){
+  struct stat *buff=NULL;
+  fstat(fd,buff);
+  return buff -> st_size;
+}
+
+//copie un fichier depuis un descripteur in vers un descripteur out 
+int copy(int in, int out){
+  char buf [BSIZE];
+  int n=read(in,buf,BSIZE);
+  int w=0;
+  if(n==-1){
+    perror("");
+    return -1;
+  }
+  while ((n=read(in,buf,BSIZE))>0){
+    w=write(out,buf,BSIZE);
+  }
+  if(w==-1){
+    perror("");
     return -1;
   }
   return 1;
