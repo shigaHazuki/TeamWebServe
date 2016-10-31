@@ -10,6 +10,7 @@ On peut accéder au serveur avec un site internet comme celui utilisé mais on n
 
 Je n'ai pas reussi à faire une question du chapitre 6 (dans le main.c et main.h : code en commentaire), j'obtenais une erreur que je n'ai pas reussi à résoudre : curl: (52) Empty reply from server. 
 
+MAJ fin : Quand le chemin d'accés au répertoire n'est pas bon, lance l'erreur : Erreur de segmentation (core dumped)
 
 Hochart Guillaume , Leduc Adrien 
 
